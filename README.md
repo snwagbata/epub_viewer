@@ -1,37 +1,48 @@
-# Epub Viewer [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![pub package](https://img.shields.io/pub/v/epub_viewer.svg)](https://pub.dartlang.org/packages/epub_viewer)
+# Epub Viewer [![pub package](https://img.shields.io/pub/v/epub_viewer.svg)](https://pub.dartlang.org/packages/epub_viewer)
 
 
-a fork of [epub_kitty](https://github.com/451518849/epub_kitty) with few more features.
+originally a fork of [epub_kitty](https://github.com/451518849/epub_kitty) with few more features.
 i made this out of epub_kitty because the author was inactive(he isn't merging PRs or attending to issues) and i started having alot of issues with the plugin
 
+epub_viewer is an epub ebook reader that encapsulates the [folioreader](https://folioreader.github.io/FolioReaderKit/) framework.
+  It supports iOS and android.
+
+## Features
+| Name | Android | iOS |
+|------|-------|------|
+| Reading Time Left / Pages left | ✅ | ✅ |
+| Last Read Locator | ✅ | ✅ |
+| Distraction Free Reading | ✅ | ❌ |
+| Load ePub from Asset | ✅ | ✅ |
+
 ## ScreenShots
-<table>
-  <tr>
-    <td align="center">
-      <img src="https://github.com/JideGuru/epub_viewer/raw/master/screenshots/1.jpg" width="250px">
-    </td>
-    <td align="center">
-      <img src="https://github.com/JideGuru/epub_viewer/raw/master/screenshots/2.png" width="250px">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-       <img src="https://github.com/JideGuru/epub_viewer/raw/master/screenshots/3.jpg" width="250px">
-    </td>
-    <td align="center">
-       <img src="https://github.com/JideGuru/epub_viewer/raw/master/screenshots/4.png" width="250px">
-    </td>
-  </tr>
-</table>
-
-
-epub_reader is an epub ebook reader that encapsulates the [folioreader](https://folioreader.github.io/FolioReaderKit/) framework.
-  It supports iOS and android, but is customizable on iOS. 
-  It is very easy to use, you just need to set up the configuration file can open the ebook, very convenient.
-  However, it is not yet highly customizable on android.
-  But it has been able to meet daily needs.
+<a href="#screenshots">
+  <img src="https://raw.githubusercontent.com/JideGuru/epub_viewer/master/screenshots/1.png" width="200px">
+</a>&nbsp;&nbsp;
+<a href="#screenshots">
+  <img src="https://raw.githubusercontent.com/JideGuru/epub_viewer/master/screenshots/2.png" width="200px">
+</a>&nbsp;&nbsp;
+<a href="#screenshots">
+  <img src="https://raw.githubusercontent.com/JideGuru/epub_viewer/master/screenshots/3.png" width="200px">
+</a>&nbsp;&nbsp;
+<a href="#screenshots">
+  <img src="https://raw.githubusercontent.com/JideGuru/epub_viewer/master/screenshots/4.png" width="200px">
+</a>&nbsp;&nbsp;
+<a href="#screenshots">
+  <img src="https://raw.githubusercontent.com/JideGuru/epub_viewer/master/screenshots/5.png" width="200px">
+</a>&nbsp;&nbsp;
+<a href="#screenshots">
+  <img src="https://raw.githubusercontent.com/JideGuru/epub_viewer/master/screenshots/6.png" width="200px">
+</a>&nbsp;&nbsp;
 
 ## Install
+This plugin requires `Swift` to work on iOS.
+Also, the minimum deployment target is 9.0
+```
+platform :ios, '9.0'
+```
+
+Import into pubspec.yaml
 ```
 dependencies:
   epub_viewer: latest_version
@@ -39,36 +50,58 @@ dependencies:
 
 ## Usage
 ```dart
-/**
-* @identifier (android useless)
-* @themeColor
-* @scrollDirection (android useless)
-* @allowSharing (android useless)
-*/
-EpubViewer.setConfig("book", "#32a852","vertical",true);
+EpubViewer.setConfig(
+  themeColor: Theme.of(context).primaryColor,
+  identifier: "iosBook",
+  scrollDirection: EpubScrollDirection.VERTICAL,
+  allowSharing: true,
+  enableTts: true,
+)
 
 /**
 * @bookPath
-* @lastLocation (optional and only android for now)
+* @lastLocation (optional and only android)
 */
 EpubViewer.open(
-    'bookPath',
-	lastLocation: {
-        "bookId": "2239",
-        "href": "/OEBPS/ch06.xhtml",
-        "created": 1539934158390,
-        "locations": {
-            "cfi": "epubcfi(/0!/4/4[simple_book]/2/2/6)"
-        }
-    }, // first page will open up if the value is null
+  'bookPath',
+  lastLocation: EpubLocator.fromJson({
+    "bookId": "2239",
+    "href": "/OEBPS/ch06.xhtml",
+    "created": 1539934158390,
+    "locations": {
+       "cfi": "epubcfi(/0!/4/4[simple_book]/2/2/6)"
+    }
+  }), // first page will open up if the value is null
 );
 
 // Get locator which you can save in your database
 EpubViewer.locatorStream.listen((locator) {
-   print('Locator: $locator');
+   print('LOCATOR: ${EpubLocator.fromJson(jsonDecode(locator))}');
    // convert locator from string to json and save to your database to be retrieved later
 });
 ```
+
+You can also load epub from your assets using `EpubViewer.openAsset()`
+
+```dart
+await EpubViewer.openAsset(
+  'assets/3.epub',
+  lastLocation: EpubLocator.fromJson({
+      "bookId": "2239",
+      "href": "/OEBPS/ch06.xhtml",
+      "created": 1539934158390,
+      "locations": {
+         "cfi": "epubcfi(/0!/4/4[simple_book]/2/2/6)"
+      }
+  }), // first page will open up if the value is null
+ );
+
+// Get locator which you can save in your database
+EpubViewer.locatorStream.listen((locator) {
+   print('LOCATOR: ${EpubLocator.fromJson(jsonDecode(locator))}');
+   // convert locator from string to json and save to your database to be retrieved later
+});
+ ```
 
 Check the [Sample](https://github.com/JideGuru/epub_viewer/tree/master/example) project or [this ebook app](https://github.com/JideGuru/FlutterEbookApp) for implementation
 ## Issues

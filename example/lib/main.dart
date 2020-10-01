@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -16,13 +17,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool loading = true;
+  bool loading = false;
   Dio dio = new Dio();
 
   @override
   void initState() {
     super.initState();
-    download();
+//    download();
   }
 
   download() async {
@@ -44,29 +45,48 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: loading
               ? CircularProgressIndicator()
-              : GestureDetector(
-                  onTap: () async {
+              : FlatButton(
+                  onPressed: () async {
                     Directory appDocDir =
                         await getApplicationDocumentsDirectory();
                     print('$appDocDir');
 
                     String iosBookPath = '${appDocDir.path}/chair.epub';
+                    print(iosBookPath);
                     String androidBookPath = 'file:///android_asset/3.epub';
-                    EpubViewer.setConfig("iosBook", "#32a852", "vertical", true);
-                    EpubViewer.open(
-                      Platform.isAndroid ? androidBookPath : iosBookPath,
-                      lastLocation: {
+                    EpubViewer.setConfig(
+                      themeColor: Theme.of(context).primaryColor,
+                      identifier: "iosBook",
+                      scrollDirection: EpubScrollDirection.ALLDIRECTIONS,
+                      allowSharing: true,
+                      enableTts: true,
+                    );
+//                    EpubViewer.open(
+//                      Platform.isAndroid ? androidBookPath : iosBookPath,
+//                      lastLocation: EpubLocator.fromJson({
+//                        "bookId": "2239",
+//                        "href": "/OEBPS/ch06.xhtml",
+//                        "created": 1539934158390,
+//                        "locations": {
+//                          "cfi": "epubcfi(/0!/4/4[simple_book]/2/2/6)"
+//                        }
+//                      }),
+//                    );
+
+                    await EpubViewer.openAsset(
+                      'assets/3.epub',
+                      lastLocation: EpubLocator.fromJson({
                         "bookId": "2239",
                         "href": "/OEBPS/ch06.xhtml",
                         "created": 1539934158390,
                         "locations": {
                           "cfi": "epubcfi(/0!/4/4[simple_book]/2/2/6)"
                         }
-                      },
+                      }),
                     );
                     // get current locator
-                    EpubViewer.locatorStream.listen((event) {
-                      print('EVENT: $event');
+                    EpubViewer.locatorStream.listen((locator) {
+                      print('LOCATOR: ${EpubLocator.fromJson(jsonDecode(locator))}');
                     });
                   },
                   child: Container(
@@ -97,8 +117,8 @@ class _MyAppState extends State<MyApp> {
         : await getApplicationDocumentsDirectory();
 
     String path = appDocDir.path + '/chair.epub';
-    print(path);
     File file = File(path);
+//    await file.delete();
 
     if (!File(path).existsSync()) {
       await file.create();

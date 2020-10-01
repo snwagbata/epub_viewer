@@ -16,29 +16,35 @@ class EpubConfig: NSObject {
     open var allowSharing: Bool = false
     open var scrollDirection: FolioReaderScrollDirection = FolioReaderScrollDirection.vertical
     
-    init(Identifier: String,tintColor: String, allowSharing: Bool,scrollDirection: String) {
+    init(Identifier: String,tintColor: String, allowSharing: Bool,
+            scrollDirection: String, enableTts: Bool) {
         self.config = FolioReaderConfig(withIdentifier: Identifier)
         self.tintColor = UIColor.init(rgba: tintColor)
         self.allowSharing = allowSharing
+        self.config.canChangeScrollDirection = false
         if scrollDirection == "vertical"{
             self.config.scrollDirection = FolioReaderScrollDirection.vertical
-        }else {
+        }else if (scrollDirection == "horizontal"){
             self.config.scrollDirection = FolioReaderScrollDirection.horizontal
+        }else{
+            self.config.canChangeScrollDirection = true
         }
+        self.config.enableTTS = enableTts
+        self.config.hidePageIndicator = false
         super.init()
         
         self.readerConfiguration()
-
     }
     
     private func readerConfiguration() {
-        self.config.shouldHideNavigationOnTap = true
+        self.config.shouldHideNavigationOnTap = false
         self.config.scrollDirection = self.scrollDirection
         self.config.enableTTS = false
         self.config.displayTitle = true
         self.config.allowSharing = self.allowSharing
         self.config.tintColor = self.tintColor
         self.config.canChangeFontStyle = false
+        self.config.hideBars = false
         // Custom sharing quote background
         self.config.quoteCustomBackgrounds = []
         if let image = UIImage(named: "demo-bg") {

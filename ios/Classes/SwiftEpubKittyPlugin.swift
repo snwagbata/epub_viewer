@@ -32,16 +32,17 @@ public class SwiftEpubViewerPlugin: NSObject, FlutterPlugin,FolioReaderPageDeleg
         let scrollDirection = arguments["scrollDirection"] as! String
         let color = arguments["themeColor"] as! String
         let allowSharing = arguments["allowSharing"] as! Bool
+        let enableTts = arguments["enableTts"] as! Bool
 
-        self.config = EpubConfig.init(Identifier: Identifier,tintColor: color,allowSharing: allowSharing,scrollDirection: scrollDirection)
+        self.config = EpubConfig.init(Identifier: Identifier,tintColor: color,allowSharing:
+            allowSharing,scrollDirection: scrollDirection, enableTts: enableTts)
 
         break
       case "open":
           setPageHandler()
           let arguments = call.arguments as![String:Any]
           let bookPath = arguments["bookPath"] as! String
-          let location = arguments["lastLocation"] as! String
-          self.open(epubPath: bookPath, location: location)
+          self.open(epubPath: bookPath)
 
           break
       case "close":
@@ -68,7 +69,7 @@ public class SwiftEpubViewerPlugin: NSObject, FlutterPlugin,FolioReaderPageDeleg
       }
       
       
-      fileprivate func open(epubPath: String, location: String) {
+      fileprivate func open(epubPath: String) {
            if epubPath == "" {
               return
           }

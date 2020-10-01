@@ -12,25 +12,26 @@ public class ReaderConfig {
     private String themeColor;
     private String scrollDirection;
     private boolean allowSharing;
+    private boolean showTts;
 
     public Config config;
 
     public ReaderConfig(Context context, String identifier, String themeColor,
-                        String scrollDirection, boolean allowSharing){
+                        String scrollDirection, boolean allowSharing, boolean showTts){
 
-        config = AppUtil.getSavedConfig(context);
-        if (config == null)
+//        config = AppUtil.getSavedConfig(context);
+//        if (config == null)
             config = new Config();
-        Log.e("Reader", "scrollDirection.equals(\"vertical\") " + scrollDirection);
-        Log.e("Reader", "scrollDirection.equals(\"vertical\") " + scrollDirection.equals("vertical"));
-
-        config.setAllowedDirection(Config.AllowedDirection.VERTICAL_AND_HORIZONTAL);
-
-//        if (scrollDirection.equals("vertical")){
-//            config.setAllowedDirection(Config.AllowedDirection.ONLY_VERTICAL);
-//        }else {
-//            config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
-//        }
+        if (scrollDirection.equals("vertical")){
+            config.setAllowedDirection(Config.AllowedDirection.ONLY_VERTICAL);
+        }else if(scrollDirection.equals("horizontal")){
+            config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+        }else{
+            config.setAllowedDirection(Config.AllowedDirection.VERTICAL_AND_HORIZONTAL);
+        }
         config.setThemeColorInt(Color.parseColor(themeColor));
+        config.setNightThemeColorInt(Color.parseColor(themeColor));
+        config.setShowRemainingIndicator(true);
+        config.setShowTts(showTts);
     }
 }
